@@ -4,10 +4,10 @@
 
 ---
 
-## ⚠️ 最初にすること
+## ⚠️ 最初にすること（あなたが自分で実行します）
 
-テンプレートとツールはGitHubに置いてあります。**ファイルの添付は不要です。**
-新しいスレッドの最初に、次のコマンドを実行してください。
+テンプレートとツールはGitHubに置いてあります。**ユーザーからのファイル添付はありません。**
+あなたがbashで次のコマンドを実行して、作業環境を用意してください。
 
 ```
 curl -sL https://raw.githubusercontent.com/akkan-dai/tesla-deck-kit/main/setup.sh | bash
@@ -15,8 +15,7 @@ curl -sL https://raw.githubusercontent.com/akkan-dai/tesla-deck-kit/main/setup.s
 
 `/home/claude/w/` にテンプレートとツールが展開されます。
 `raw.githubusercontent.com` はbashの許可ドメインなので、追加設定は要りません。
-
-もしGitHubから取得できない場合のみ、次の9ファイルを添付してください。
+取得に失敗した場合だけ、ユーザーに9ファイルの添付を依頼してください。
 
 `_TEMPLATE_deck_ja.html` `_TEMPLATE_deck_en.html` `count.py` `build.py` `inject.py` `verify.py` `png.py` `overlap.py` `data_test.js`
 
@@ -49,8 +48,8 @@ curl -sL https://raw.githubusercontent.com/akkan-dai/tesla-deck-kit/main/setup.s
 
 ## 制作フロー
 
-1. **`ls -la /mnt/user-data/uploads/` を必ず実行**
-   添付ファイルは本文に展開されなくても、ディスクに実体があります。読みに行かないと見落とします。
+1. **上のsetupコマンドを実行し、`ls -la /mnt/user-data/uploads/` も必ず確認**
+   画像などの添付は本文に展開されなくても、ディスクに実体があります。読みに行かないと見落とします。
 2. **web_search で裏取り**
    指示書の断定は必ず検証します。**食い違いがあれば必ず報告してください。**過去に編集長・CTR改善AIの指摘が誤っていたことが複数回あります。**日付は特に外れやすい**ので、イベント日・開始日・公表日を別々に確認してください。
 3. **台本を書く** → `count.py` で尺確認 → 調整 → タイムコード付与（335字/分、英語152wpm）
@@ -194,9 +193,4 @@ DATAの書き方は `data_test.js` に1型ずつ見本があります。**新し
 
 ## 未完了・申し送り
 
-1. **9月15日公開予定の回：9月13〜14日に数値を再確認**
-   Waymoの週間乗車回数・都市数、Tesla Robotaxiの運行都市、FSD v15の出荷状況ほか8項目。チェックリストは `video-brief-0915.md` の4章にあります
-2. **Cybercab回の続報：10月上旬にテキサス州の登録台数を再確認**
-   9月3日時点で45台。動いていなければ、制約が規制ではないことの確認になり、続報の切り口になります。NHTSAの追加資料要求・是正要求が出た場合も単独回に値します
-3. **英語版の公開可否が保留だった2本（8/30・8/31）**
-   2026年9月5日に「どちらも公開しない」と判断済み。理由は `video-brief-0905.md` の追記に記載
+現在なし。
