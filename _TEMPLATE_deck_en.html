@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Kenのテスラ戦略ラボ｜2026-07-30 画面資料</title>
+<style>
+:root{
+  --bg:#0C1220; --bg2:#141D31; --line:#243250;
+  --ink:#F1EDE2; --dim:#9AA8C0;
+  --amber:#E8763A;   /* 太陽光／報道 */
+  --teal:#35A8A0;    /* 送電・確認済み */
+  --slate:#7C8AA5;   /* 未確認・仮説 */
+  --alert:#D0503C;
+  --disp:"DejaVu Sans Condensed","Noto Sans CJK JP",sans-serif;
+  --body:"Noto Sans CJK JP","DejaVu Sans",sans-serif;
+  --mono:"DejaVu Sans Mono",monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#05080F}
+body{font-family:var(--body);-webkit-font-smoothing:antialiased}
+#stageWrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#stage{width:1920px;height:1080px;position:relative;flex:none;transform-origin:50% 50%}
+.slide{width:1920px;height:1080px;position:absolute;top:0;left:0;background:var(--bg);color:var(--ink);
+  padding:78px 96px 96px;overflow:hidden;display:none}
+.slide.on{display:block}
+.fit{display:flex;flex-direction:column;height:100%;transform-origin:top center}
+/* 撮影・印刷モード：スケールを外して素の1920x1080にする */
+html.capture,html.capture body{overflow:visible}
+html.capture #stage{transform:none!important}
+/* スライド一覧（Fキー） */
+#grid{position:fixed;inset:0;background:rgba(5,8,15,.97);display:none;overflow:auto;padding:40px 32px;z-index:50}
+#grid.on{display:block}
+.ggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;max-width:1560px;margin:0 auto}
+.gcell{position:relative;cursor:pointer;border:2px solid #243250;border-radius:4px;overflow:hidden;aspect-ratio:16/9;background:var(--bg)}
+.gcell:hover{border-color:var(--teal)}
+.gcell.cur{border-color:var(--amber)}
+.gbox{width:1920px;height:1080px;position:absolute;top:0;left:0;transform-origin:top left;pointer-events:none}
+.glab{position:absolute;left:7px;top:7px;z-index:3;font-family:var(--mono);font-size:13px;color:var(--ink);
+  background:rgba(5,8,15,.75);padding:2px 8px;border-radius:2px;letter-spacing:.06em}
+#gtitle{text-align:center;color:var(--dim);font-family:var(--mono);font-size:16px;letter-spacing:.16em;margin-bottom:26px}
+/* HUD */
+#hud{position:fixed;right:16px;bottom:12px;z-index:40;font-family:var(--mono);font-size:14px;
+  color:#5C6B85;letter-spacing:.08em;display:flex;gap:18px;align-items:center}
+#hud b{color:var(--dim);font-weight:400}
+html.capture #hud{display:none}
+.slide::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 90% at 88% -12%,rgba(232,118,58,.10),transparent 55%),
+             radial-gradient(90% 80% at -8% 108%,rgba(53,168,160,.10),transparent 55%)}
+.slide>.fit{position:relative;z-index:1}
+
+/* --- ヘッダ --- */
+.eyebrow{display:flex;align-items:baseline;gap:22px;margin-bottom:26px}
+.snum{font-family:var(--mono);font-size:22px;color:var(--slate);letter-spacing:.14em}
+.ebtext{font-family:var(--mono);font-size:22px;letter-spacing:.20em;color:var(--dim);text-transform:uppercase}
+h1{font-family:var(--disp);font-size:82px;line-height:1.16;font-weight:700;letter-spacing:-.005em;max-width:1620px}
+h1 em{font-style:normal;color:var(--amber)}
+h1 b{font-weight:700;color:var(--teal)}
+.sub{margin-top:22px;font-size:34px;line-height:1.55;color:var(--dim);max-width:1500px;font-weight:400}
+
+/* --- 確度タグ（このデッキの中核装置） --- */
+.tag{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:19px;
+  letter-spacing:.10em;padding:5px 13px;border:1px solid currentColor;border-radius:2px;white-space:nowrap}
+.t-off{color:var(--teal)} .t-news{color:var(--amber)} .t-unk{color:var(--slate)} .t-hyp{color:var(--slate)}
+.legend{position:absolute;right:96px;bottom:38px;display:flex;gap:16px;z-index:2}
+
+/* --- カード --- */
+.grid{display:grid;gap:26px;margin-top:auto;margin-bottom:auto}
+.g2{grid-template-columns:1fr 1fr} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--bg2);border-left:6px solid var(--slate);padding:34px 34px 30px;border-radius:3px;
+  display:flex;flex-direction:column;gap:12px;min-height:0}
+.card.off{border-left-color:var(--teal)} .card.news{border-left-color:var(--amber)}
+.card.unk{border-left-color:var(--slate);background:transparent;border:1px dashed var(--line);border-left:6px solid var(--slate)}
+.k{font-size:28px;color:var(--dim);letter-spacing:.02em}
+.v{font-family:var(--mono);font-size:66px;font-weight:700;line-height:1.05;letter-spacing:-.02em}
+.v small{font-size:32px;color:var(--dim);font-weight:400;letter-spacing:0}
+.note{font-size:25px;line-height:1.5;color:var(--dim)}
+
+/* --- 出典 --- */
+.src{position:absolute;left:96px;bottom:38px;font-family:var(--mono);font-size:19px;color:#5C6B85;
+  letter-spacing:.03em;max-width:900px;line-height:1.5}
+
+/* --- 汎用 --- */
+.big{font-family:var(--mono);font-size:150px;font-weight:700;line-height:1;letter-spacing:-.03em}
+.mid{font-family:var(--mono);font-size:92px;font-weight:700;line-height:1.05}
+.rowlist{display:flex;flex-direction:column;gap:20px;margin-top:auto;margin-bottom:auto}
+.row{display:flex;align-items:center;gap:28px;background:var(--bg2);border-radius:3px;padding:24px 32px;
+  border-left:6px solid var(--slate)}
+.row.off{border-left-color:var(--teal)} .row.news{border-left-color:var(--amber)}
+.row .rn{font-family:var(--mono);font-size:30px;color:var(--slate);width:52px;flex:none}
+.row .rt{font-size:33px;line-height:1.4;flex:1}
+.row .rv{font-family:var(--mono);font-size:38px;font-weight:700;white-space:nowrap}
+.center{margin-top:auto;margin-bottom:auto}
+
+/* --- 日本語の行分割：文節単位で折り返し、語の途中で切らない --- */
+.slide, .slide * {
+  line-break: strict;
+  overflow-wrap: normal;
+  word-break: auto-phrase;
+}
+h1, .sub, .k, .note, .rt, .glab, #gtitle {
+  word-break: auto-phrase;
+  line-break: strict;
+}
+h1 { text-wrap: balance; }
+.sub, .note { text-wrap: pretty; }
+
+    /* photo型：縦長画像でも高さで収める */
+    .slide .center img{max-height:610px;max-width:54%;width:auto!important;height:auto;flex:0 0 auto!important;object-fit:contain;align-self:center}
+</style>
+</head>
+<body>
+
+<script>
+/* ============ 注入データ ============ */
+const LANG = "en";
+
+/* 画像は base64 データURI をこのマップに入れて DATA 側から img キーで参照する。
+   本デッキは全スライドSVG／CSS図解で構成しているため、既定では空。 */
+const IMAGES = {};
+
+const DATA = {
+  meta:{ project:"Kenのテスラ戦略ラボ", date:"YYYY-MM-DD", basis:"基準日 YYYY-MM-DD" },
+  legend:[{cls:"t-off",label:"確認済みの事実"},{cls:"t-news",label:"計画・報道"},{cls:"t-unk",label:"分析・仮説"},{cls:"t-hyp",label:"注意"}],
+  slides:[
+  {id:"S0", t:"0:00-0:15", eyebrow:"OPENING", type:"statement", cls:"off",
+   h:"見出し。<em>強調はem</em>",
+   points:["箇条書き1","箇条書き2","箇条書き3"],
+   src:"出典"},
+
+  {id:"S1", t:"0:15-0:35", eyebrow:"THE POINT", type:"twocol",
+   h:"見出し",
+   left:{ttl:"左の見出し", cls:"off", body:"本文。<b>太字</b>と<br>改行が使えます。"},
+   right:{ttl:"右の見出し", cls:"unk", body:"本文。"},
+   src:"出典"}
+  ]
+};
+</script>
+
+<script>
+/* ============ 描画 ============ */
+const esc = s => s;
+const legendHTML = () => `<div class="legend">${DATA.legend.map(l=>`<span class="tag ${l.cls}">${l.label}</span>`).join("")}</div>`;
+const head = s => `<div class="eyebrow"><span class="snum">${s.id}</span><span class="ebtext">${s.eyebrow}</span><span class="snum">${s.t}</span></div><h1>${s.h}</h1>${s.sub?`<p class="sub">${s.sub}</p>`:""}`;
+const foot = s => s.foot?`<p class="sub" style="margin-top:34px;font-size:29px">${s.foot||""}</p>`:"";
+const footb = s => s.foot?`<p class="sub" style="margin-top:22px;margin-bottom:104px;font-size:29px">${s.foot||""}</p>`:"";
+const src  = s => `<div class="src">Source: ${s.src}</div>`;
+
+
+
+/* ============ 汎用SVGヘルパー（すべてDATA駆動。ベタ書きなし） ============ */
+const SF  = LANG === "ja" ? "Noto Sans CJK JP" : "DejaVu Sans";
+const MF  = "DejaVu Sans Mono";
+const BUL = LANG === "ja" ? "・" : "— ";
+const C   = {off:"#35A8A0", news:"#E8763A", unk:"#7C8AA5", hyp:"#7C8AA5",
+             alert:"#D0503C", ink:"#F1EDE2", dim:"#9AA8C0", line:"#243250", panel:"#111C33"};
+const col = c => C[c] || C.unk;
+
+/* viewBox幅 w / 高さ h。.fit の実幅1728pxに合わせて描画高さを出す */
+const svgBox = (w,h,inner,mt) =>
+  `<svg viewBox="0 0 ${w} ${h}" width="100%" height="${Math.round(h*1728/w)}" style="margin-top:${mt==null?24:mt}px">${inner}</svg>`;
+
+const tx = (x,y,t,o) => { o=o||{};
+  return `<text x="${x}" y="${y}" fill="${o.f||C.ink}" font-size="${o.s||28}" text-anchor="${o.a||"middle"}"`
+       + ` font-family="${o.m?MF:SF}"${o.w?' font-weight="700"':""}>${t}</text>`; };
+
+/* 横並びのステップ＋矢印。steps:[{t,d,n,cls}] labels:[矢印の上の語] */
+function flowSVG(steps, opt){
+  opt = opt || {};
+  const n = steps.length, W = 1600, pad = 40, gap = opt.gap || 150;
+  const bw = (W - pad*2 - gap*(n-1)) / n, bh = opt.tall ? 330 : 250, y = 40;
+  let o = "";
+  steps.forEach((st,i)=>{
+    const x = pad + i*(bw+gap), c = col(st.cls||"off");
+    o += `<rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="6" fill="${C.panel}" stroke="${c}" stroke-width="2"/>`;
+    if(st.n) o += tx(x+bw/2, y+42, st.n, {s:24, f:c, m:1});
+    const cy = y + bh/2, nl = (st.d?1:0)+(st.d2?1:0);
+    o += tx(x+bw/2, cy + (nl?-14:14), st.t, {s:opt.tall?42:38});
+    if(st.d) o += tx(x+bw/2, cy+34, st.d, {s:27, f:C.dim});
+    if(st.d2) o += tx(x+bw/2, cy+76, st.d2, {s:27, f:C.dim});
+    if(i < n-1){
+      const ax = x+bw+10, ay = y+bh/2, tip = ax+gap-30;
+      o += `<line x1="${ax}" y1="${ay}" x2="${tip}" y2="${ay}" stroke="${C.line}" stroke-width="4"/>`;
+      o += `<polygon points="${tip},${ay} ${tip-14},${ay-9} ${tip-14},${ay+9}" fill="${C.unk}"/>`;
+      if(opt.labels && opt.labels[i]) o += tx((ax+tip)/2, ay-24, opt.labels[i], {s:22, f:C.off, m:1});
+    }
+  });
+  return svgBox(W, y+bh+40, o, opt.mt);
+}
+
+/* 段を上がるほど幅が広がる縦の梯子。steps:[{t,v,cls}] */
+function ladderSVG(steps){
+  const n = steps.length, W = 1600, bh = Math.max(52, Math.min(80, Math.floor(520/n)-16)), gap = 16;
+  let o = "";
+  steps.forEach((st,i)=>{
+    const y = 14 + i*(bh+gap), w = 560 + (W-680) * (n>1 ? i/(n-1) : 1), c = col(st.cls||"unk");
+    o += `<rect x="60" y="${y}" width="${w}" height="${bh}" rx="5" fill="${C.panel}" stroke="${c}" stroke-width="2"/>`;
+    o += tx(92, y+bh/2+10, String(i+1).padStart(2,"0"), {a:"start", s:25, f:c, m:1});
+    o += tx(150, y+bh/2+11, st.t, {a:"start", s:31, f:st.cls&&st.cls!=="unk" ? C.ink : C.dim});
+    if(st.v) o += tx(60+w-24, y+bh/2+10, st.v, {a:"end", s:26, f:c, m:1});
+  });
+  return svgBox(W, 14+n*(bh+gap), o, 20);
+}
+
+/* 番号つきカードを2段グリッドで。steps:[{t,d,cls}] */
+function gridSVG(steps){
+  const n = steps.length, per = Math.ceil(n/2), W = 1600, gap = 34;
+  const bw = (W - 80 - gap*(per-1))/per, bh = 240;
+  let o = "";
+  steps.forEach((st,i)=>{
+    const r = Math.floor(i/per), cI = i%per;
+    const x = 40 + cI*(bw+gap), y = 20 + r*(bh+gap), c = col(st.cls||"off");
+    o += `<rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="6" fill="${C.panel}" stroke="${c}" stroke-width="2"/>`;
+    o += tx(x+bw/2, y+58, String(i+1).padStart(2,"0"), {s:25, f:c, m:1});
+    o += tx(x+bw/2, y+128, st.t, {s:38});
+    if(st.d) o += tx(x+bw/2, y+180, st.d, {s:27, f:C.dim});
+  });
+  return svgBox(W, 20 + 2*bh + gap + 20, o, 20);
+}
+
+/* 折れ線。points:[{x,t,v,val,cls}] opt:{hline,hlabel,foot} */
+function lineSVG(points, opt){
+  opt = opt || {};
+  const W = 1600, H = 560, L = 100, R = 150, T = 46, B = 96;
+  const vs = points.map(p=>p.v), mx = Math.max.apply(null,vs), mn = Math.min.apply(null,vs);
+  const pad = (mx-mn)*0.18 || Math.abs(mx*0.1) || 1;
+  const hi = mx+pad, lo = mn-pad;
+  const X = i => L + i*((W-L-R)/(points.length-1||1));
+  const Y = v => T + (hi-v)/(hi-lo)*(H-T-B);
+  let o = "";
+  for(let g=0; g<=3; g++){ const y = T + g*(H-T-B)/3;
+    o += `<line x1="${L}" y1="${y}" x2="${W-R}" y2="${y}" stroke="${C.line}" stroke-width="1"/>`; }
+  o += `<polyline fill="none" stroke="${C.news}" stroke-width="4" points="${points.map((p,i)=>X(i)+","+Y(p.v)).join(" ")}"/>`;
+  points.forEach((p,i)=>{
+    o += `<circle cx="${X(i)}" cy="${Y(p.v)}" r="9" fill="${col(p.cls||"news")}"/>`;
+    o += tx(X(i), Y(p.v)-26, p.val || String(p.v), {s:28, m:1, w:1});
+    o += tx(X(i), H-52, p.x, {s:26, f:C.dim, m:1});
+    if(p.t) o += tx(X(i), H-16, p.t, {s:24, f:C.unk});
+  });
+  if(opt.hline != null){ const y = Y(opt.hline);
+    o += `<line x1="${L}" y1="${y}" x2="${W-R}" y2="${y}" stroke="${C.off}" stroke-width="2" stroke-dasharray="10 8"/>`;
+    if(opt.hlabel) o += tx(W-R-12, y-14, opt.hlabel, {a:"end", s:24, f:C.off, m:1}); }
+  return svgBox(W, H, o, 16);
+}
+
+/* 縦棒の比較。bars:[{v,val,t,cls}] */
+function barsSVG(bars){
+  const W = 1600, H = 540, base = 430;
+  const mx = Math.max.apply(null, bars.map(b=>b.v));
+  const gap = 80, bw = Math.min(430, (W-120-gap*(bars.length-1))/bars.length);
+  const x0 = (W - (bw*bars.length + gap*(bars.length-1)))/2;
+  let o = "";
+  bars.forEach((b,i)=>{
+    const h = Math.max(10, b.v/mx*350), x = x0 + i*(bw+gap), c = col(b.cls||"off");
+    o += `<rect x="${x}" y="${base-h}" width="${bw}" height="${h}" rx="4" fill="${c}" opacity="0.9"/>`;
+    o += tx(x+bw/2, base-h-20, b.val, {s:42, m:1, w:1});
+    o += tx(x+bw/2, base+44, b.t, {s:27, f:C.dim});
+  });
+  return svgBox(W, H, o, 22);
+}
+
+/* 年表。points:[{d,t,cls}] gaps:[間隔ラベル] */
+function timeSVG(points, gaps){
+  const W = 1600, H = 400, y = 236;
+  const X = i => 200 + i*((W-400)/(points.length-1||1));
+  let o = `<line x1="150" y1="${y}" x2="${W-150}" y2="${y}" stroke="${C.line}" stroke-width="4"/>`;
+  points.forEach((p,i)=>{
+    const c = col(p.cls||"unk");
+    o += `<circle cx="${X(i)}" cy="${y}" r="16" fill="${c}"/>`;
+    o += tx(X(i), y-50, p.d, {s:30, f:c, m:1});
+    o += tx(X(i), y+62, p.t, {s:29});
+    if(gaps && gaps[i] && i < points.length-1) o += tx((X(i)+X(i+1))/2, y-20, gaps[i], {s:26, f:C.dim, m:1});
+  });
+  return svgBox(W, H, o, 46);
+}
+
+/* 比率を示すドット列。d:{n,on,label} */
+function dotsSVG(d){
+  const n = d.n||40, on = d.on||0, per = d.per||20, W = 1600;
+  const cw = Math.floor((W-40)/per);
+  let o = "";
+  for(let i=0;i<n;i++){
+    const c = i%per, r = Math.floor(i/per);
+    o += `<rect x="${20+c*cw}" y="${r*62}" width="${cw-12}" height="46" rx="3" fill="${i<on?C.off:C.line}"/>`;
+  }
+  return svgBox(W, Math.ceil(n/per)*62, o, 12);
+}
+
+/* ============ 型 ============ */
+const R = {
+
+ hook: s => `${head(s)}<div class="center"></div>${src(s)}`,
+
+ specs: s => `${head(s)}<div class="grid g4" style="margin-top:44px;margin-bottom:0">${s.cards.map(c=>
+   `<div class="card ${c.cls}">${c.tag?`<span class="tag ${c.tcls||"t-unk"}" style="align-self:flex-start">${c.tag}</span>`:""}
+    <div class="k">${c.k}</div><div class="v">${c.v}</div>${c.u?`<div class="note" style="font-size:24px">${c.u}</div>`:""}</div>`).join("")}</div>${foot(s)}${src(s)}${legendHTML()}`,
+
+ specs2: s => `${head(s)}<div class="grid g4" style="margin-top:40px;margin-bottom:0">${s.cards.map(c=>
+   `<div class="card ${c.cls}"><span class="tag ${c.tcls||"t-unk"}" style="align-self:flex-start">${c.tag}</span>
+    <div class="k">${c.k}</div><div class="v">${c.v}</div><div class="note" style="font-size:24px">${c.u||""}</div></div>`).join("")}</div>
+   ${s.foot?`<div style="margin-top:40px;border-top:1px solid var(--line);padding-top:28px;font-size:28px;line-height:1.6;color:var(--dim)">${s.foot}</div>`:""}${src(s)}${legendHTML()}`,
+
+ units: s => `${head(s)}<div class="grid g2" style="margin-top:44px">${s.units.map(u=>
+   `<div class="card off"><div style="font-family:var(--mono);font-size:56px;font-weight:700;color:var(--amber)">${u.u}</div>
+    <div class="k">${u.n}</div><div class="note">${u.d}</div></div>`).join("")}</div>${foot(s)}${src(s)}`,
+
+ /* 比率バー。bar:{a:{flex,big,sub},b:{flex,label}} ends:[左,右] cards:[{cls,k,big,note,strike}] */
+ ratio: s => `${head(s)}<div class="center" style="width:100%">
+   <div style="display:flex;height:180px;border-radius:4px;overflow:hidden;margin-top:20px">
+     <div style="flex:${s.bar.a.flex};background:linear-gradient(90deg,#35A8A0,#2A8A84);display:flex;align-items:center;padding-left:44px">
+       <div><div style="font-family:var(--mono);font-size:64px;font-weight:700;color:#07110F">${s.bar.a.big}</div>
+       <div style="font-size:28px;color:#07110F;opacity:.8">${s.bar.a.sub||""}</div></div></div>
+     <div style="flex:${s.bar.b.flex};background:#243250;display:flex;align-items:center;justify-content:center">
+       <div style="font-family:var(--mono);font-size:30px;color:var(--dim)">${s.bar.b.label||""}</div></div>
+   </div>
+   ${s.ends?`<div style="display:flex;justify-content:space-between;margin-top:20px;font-family:var(--mono);font-size:28px;color:var(--dim)"><span>${s.ends[0]}</span><span>${s.ends[1]}</span></div>`:""}
+   ${s.cards?`<div style="margin-top:52px;display:flex;gap:26px">${s.cards.map(c=>
+     `<div class="card ${c.cls}" style="flex:1"><div class="k">${c.k}</div>
+       <div style="font-family:var(--mono);font-size:44px;color:${c.strike?"var(--alert)":"var(--teal)"}${c.strike?";text-decoration:line-through":""}">${c.big}</div>
+       <div class="note">${c.note||""}</div></div>`).join("")}</div>`:""}
+   </div>${src(s)}`,
+
+ /* 大きな数字のカード。cards:[{cls,tag,tcls,k,big,note,color,strike,mid}] */
+ unitbig: s => `${head(s)}<div class="center" style="display:flex;gap:60px;align-items:stretch;width:100%">${s.cards.map(c=>
+   `<div class="card ${c.cls}" style="flex:1;justify-content:center">${c.tag?`<span class="tag ${c.tcls||"t-unk"}" style="align-self:flex-start">${c.tag}</span>`:""}
+     ${c.k?`<div class="k">${c.k}</div>`:""}
+     <div class="${c.mid?"mid":"big"}" style="color:${c.color||(c.strike?"var(--alert)":"var(--teal)")}${c.strike?";text-decoration:line-through":""}">${c.big}</div>
+     <div class="note" style="font-size:28px">${c.note||""}</div></div>`).join("")}</div>${src(s)}${legendHTML()}`,
+
+ /* カード＋ドット比率図。cards:[{cls,tag,tcls,k,mid,strike,note}] dots:{n,on,per,label} */
+ city: s => `${head(s)}<div class="center" style="width:100%">
+   <div style="display:flex;gap:32px;margin-top:30px">${s.cards.map(c=>
+     `<div class="card ${c.cls}" style="flex:1">${c.tag?`<span class="tag ${c.tcls||"t-unk"}" style="align-self:flex-start">${c.tag}</span>`:""}
+       <div class="k">${c.k}</div>
+       ${c.mid?`<div class="${c.strike?"":"mid"}" style="${c.strike?"font-family:var(--mono);font-size:52px;color:var(--alert);text-decoration:line-through;line-height:1.2":""}">${c.mid}</div>`:""}
+       <div class="note">${c.note||""}</div></div>`).join("")}</div>
+   ${s.dots?`${dotsSVG(s.dots)}${s.dots.label?`<div style="margin-top:10px;font-size:28px;color:var(--dim)">${s.dots.label}</div>`:""}`:""}
+   </div>${src(s)}${legendHTML()}`,
+
+ /* 2案の対比（大見出し＋箇条書き）。left/right:{cls,tag,tcls,ttl,items,size} */
+ ownbuy: s => `${head(s)}<div class="center" style="display:flex;gap:44px;width:100%">${[s.left,s.right].map(c=>
+   `<div class="card ${c.cls}" style="flex:1;min-height:360px">${c.tag?`<span class="tag ${c.tcls||"t-unk"}" style="align-self:flex-start">${c.tag}</span>`:""}
+     <div style="font-family:var(--disp);font-size:${c.size||58}px;font-weight:700;color:${c.cls==="off"?"var(--teal)":"var(--slate)"}">${c.ttl}</div>
+     <div class="note" style="font-size:29px;margin-top:12px">${c.items.map(i=>BUL+i).join("<br>")}</div></div>`).join("")}
+   </div>${src(s)}${legendHTML()}`,
+
+ table: s => `${head(s)}<div style="margin-top:40px;width:100%">
+   <div style="display:grid;grid-template-columns:300px repeat(${s.cols.length-1},1fr);gap:2px;background:var(--line)">
+     ${s.cols.map((c,i)=>`<div style="background:#1B2540;padding:22px 28px;font-family:var(--mono);font-size:${i?"31px":"26px"};font-weight:700;color:${i==1?"var(--amber)":i==2?"var(--teal)":"var(--dim)"}">${c}</div>`).join("")}
+     ${s.rows.map(r=>r.map((c,i)=>`<div style="background:var(--bg2);padding:22px 28px;font-size:${i?"30px":"26px"};color:${i?"var(--ink)":"var(--dim)"};line-height:1.4">${c}</div>`).join("")).join("")}
+   </div></div>${foot(s)}${src(s)}`,
+
+ /* 横フロー。steps:[{t,d,d2,n,cls}] labels:[矢印上の語] tall:true */
+ flow:  s => `${head(s)}<div class="center" style="width:100%">${flowSVG(s.steps, {labels:s.labels, tall:s.tall})}${footb(s)}</div>${src(s)}`,
+ chain: s => `${head(s)}<div class="center" style="width:100%">${flowSVG(s.steps, {labels:s.labels, tall:true})}${footb(s)}</div>${src(s)}`,
+
+ /* 縦の梯子。steps:[{t,v,cls}] */
+ ladder: s => `${head(s)}<div class="center" style="width:100%">${ladderSVG(s.steps)}${footb(s)}</div>${src(s)}`,
+
+ /* 番号つき2段グリッド。steps:[{t,d,cls}] */
+ flow2: s => `${head(s)}<div class="center" style="width:100%">${gridSVG(s.steps)}${footb(s)}</div>${src(s)}`,
+
+ /* 折れ線。points:[{x,t,v,val,cls}] hline / hlabel */
+ pricechart: s => `${head(s)}<div class="center" style="width:100%">${lineSVG(s.points, {hline:s.hline, hlabel:s.hlabel})}${footb(s)}</div>${src(s)}`,
+
+ /* 縦棒比較。bars:[{v,val,t,cls}] */
+ subtract: s => `${head(s)}<div class="center" style="width:100%">${barsSVG(s.bars)}${footb(s)}</div>${src(s)}`,
+
+ /* 年表。points:[{d,t,cls}] gaps:[…] */
+ timeline: s => `${head(s)}<div class="center" style="width:100%">${timeSVG(s.points, s.gaps)}${s.foot?`<div style="margin-top:16px;text-align:center;font-size:30px;color:var(--dim)">${s.foot}</div>`:""}</div>${src(s)}`,
+
+ three: s => `${head(s)}<div class="grid g3" style="margin-top:44px">${s.three.map(t=>
+   `<div class="card ${t.cls}" style="align-items:stretch">
+     <div style="font-family:var(--disp);font-size:48px;font-weight:700">${t.ttl}</div>
+     <div style="font-family:var(--mono);font-size:21px;color:var(--dim);letter-spacing:.04em">${t.tag||""}</div>
+     <ul style="margin-top:14px;list-style:none">${t.items.map(i=>`<li style="font-size:27px;line-height:1.45;margin-bottom:16px;padding-left:26px;position:relative"><span style="position:absolute;left:0;color:var(--dim)">—</span>${i}</li>`).join("")}</ul>
+   </div>`).join("")}</div>${footb(s)}${src(s)}`,
+
+ /* 行リスト。6行以上は自動で詰め、凡例に重ならないよう下を空ける */
+ rows: s => { const n = s.rows.length, tight = n >= 6, xt = n >= 7;
+   const pad = xt ? "10px 32px" : tight ? "15px 32px" : "24px 32px";
+   const gap = xt ? "10px" : tight ? "13px" : "20px";
+   const fs  = xt ? "28px" : tight ? "30px" : "33px";
+   const mgn = n >= 5 ? `margin-top:${xt?20:30}px;margin-bottom:${s.foot?"12px":"116px"}` : "margin-top:38px";
+   return `${head(s)}<div class="rowlist" style="${mgn};gap:${gap}">${s.rows.map(r=>
+     `<div class="row ${r.cls}" style="padding:${pad}"><span class="rn">${r.n}</span><span class="rt" style="font-size:${fs}">${r.t}</span><span class="rv" style="color:${r.cls=="off"?"var(--teal)":r.cls=="news"?"var(--amber)":"var(--slate)"}">${r.v}</span></div>`).join("")}</div>${footb(s)}${src(s)}${legendHTML()}`; },
+
+ ps: s => `${head(s)}<div class="center" style="width:100%">
+   <div style="display:flex;gap:26px;margin-top:44px">${s.points.map((p,i)=>
+     `<div class="card news" style="flex:1;justify-content:center;min-height:210px">
+       <div style="font-family:var(--mono);font-size:24px;color:var(--amber)">0${i+1}</div>
+       <div style="font-size:30px;line-height:1.45">${p}</div></div>`).join("")}</div>
+   <div style="margin-top:46px;border-top:1px solid var(--line);padding-top:30px;font-size:29px;color:var(--dim)">
+     ${s.brand||""}</div></div>${src(s)}`,
+
+ split: s => `${head(s)}<div class="center" style="display:flex;gap:44px;width:100%">
+   <div class="card ${s.left.cls}" style="flex:1.15"><div style="font-family:var(--disp);font-size:46px;font-weight:700">${s.left.ttl}</div>
+     <ul style="margin-top:16px;list-style:none">${s.left.items.map(i=>`<li style="font-size:31px;line-height:1.5;margin-bottom:18px;padding-left:30px;position:relative"><span style="position:absolute;left:0;color:var(--teal)">\u2713</span>${i}</li>`).join("")}</ul></div>
+   <div class="card ${s.right.cls||""}" style="flex:1;justify-content:center"><div style="font-size:30px;color:var(--dim)">${s.right.ttl}</div>
+     <div style="font-family:var(--mono);font-size:132px;font-weight:700;color:var(--amber);line-height:1;letter-spacing:-.03em">${s.right.big}</div>
+     <div class="note" style="font-size:28px;margin-top:10px">${s.right.sub||""}</div></div>
+   </div>${footb(s)}${src(s)}${legendHTML()}`,
+
+ twocol: s => `${head(s)}<div class="grid g2" style="margin-top:46px;margin-bottom:0">${[s.left,s.right].map(c=>
+   `<div class="card ${c.cls}"><div style="font-family:var(--disp);font-size:46px;font-weight:700">${c.ttl}</div>
+    <div class="note" style="font-size:30px;margin-top:10px">${c.body}</div></div>`).join("")}</div>
+   ${s.foot?`<div style="margin-top:44px;border-top:1px solid var(--line);padding-top:30px;font-size:34px;color:var(--amber)">${s.foot}</div>`:""}${src(s)}`,
+
+ statement: s => `${head(s)}<div class="center" style="width:100%">
+   <div style="display:flex;gap:24px;margin-top:40px">${s.points.map((p,i)=>
+     `<div class="card off" style="flex:1;justify-content:center;min-height:230px">
+       <div style="font-family:var(--mono);font-size:24px;color:var(--teal)">0${i+1}</div>
+       <div style="font-size:30px;line-height:1.45">${p}</div></div>`).join("")}</div>
+   ${s.foot?`<div style="margin-top:44px;font-size:31px;color:var(--dim)">${s.foot}</div>`:""}</div>${src(s)}`,
+
+ quote: s => `${head(s)}<div class="center" style="width:100%">
+   <div class="card off" style="padding:52px 60px;border-left-width:8px">
+     <div style="font-size:44px;line-height:1.6;color:var(--ink)">\u201C${s.quote}\u201D</div></div>
+   <div style="margin-top:36px;font-size:30px;line-height:1.6;color:var(--dim)">${s.note||""}</div></div>${src(s)}`,
+
+ chart: s => `${head(s)}<div style="display:flex;gap:40px;align-items:flex-start;margin-top:18px;margin-bottom:96px">
+   <div style="flex:0 0 62%"><img src="${IMAGES[s.img]||""}" style="width:100%;max-height:600px;object-fit:contain;border-radius:10px;display:block"></div>
+   <div style="flex:1;display:flex;flex-direction:column;gap:18px;padding-top:6px">${(s.points||[]).map(p=>
+     `<div class="card ${s.cls||"off"}" style="padding:20px 24px;font-size:29px;line-height:1.5">${p}</div>`).join("")}
+     ${s.foot?`<p class="sub" style="font-size:27px;margin:14px 0 0">${s.foot}</p>`:""}</div>
+  </div>${src(s)}`,
+
+ photo: s => `${head(s)}<div class="center" style="display:flex;gap:40px;align-items:center;width:100%">
+   <img src="${IMAGES[s.img]}" style="flex:1.25;width:0;border-radius:4px;border:1px solid var(--line)"/>
+   <div style="flex:1;display:flex;flex-direction:column;gap:20px">${s.points.map(p=>
+     `<div class="card ${s.cls||"off"}" style="padding:24px 28px"><div style="font-size:30px;line-height:1.4">${p}</div></div>`).join("")}</div>
+   </div>${footb(s)}${src(s)}`,
+
+ concl2: s => `${head(s)}<div class="grid g3" style="margin-top:46px;margin-bottom:0">${s.concl.map(c=>
+   `<div class="card ${c.cls}" style="min-height:250px"><div style="font-family:var(--disp);font-size:48px;font-weight:700">${c.ttl}</div>
+    <div class="note" style="font-size:29px">${c.txt}</div></div>`).join("")}</div>
+   ${s.foot?`<div style="margin-top:44px;border-top:1px solid var(--line);padding-top:30px;font-size:31px;line-height:1.6;color:var(--dim)">${s.foot}</div>`:""}${src(s)}`,
+
+ cta: s => `${head(s)}<div class="center" style="width:100%">
+   <div style="display:flex;gap:30px;margin-top:50px;justify-content:center">${s.points.map(p=>
+     `<div class="card off" style="flex:1;align-items:center;justify-content:center;min-height:240px">
+       <div style="font-family:var(--disp);font-size:52px;font-weight:700;color:var(--teal);text-align:center">${p}</div></div>`).join("")}</div>
+   ${s.foot?`<div style="margin-top:50px;text-align:center;font-size:36px;color:var(--ink)">${s.foot}</div>`:""}</div>${src(s)}`,
+
+ concl: s => `${head(s)}<div class="grid g3" style="margin-top:40px;margin-bottom:0">${s.concl.map(c=>
+   `<div class="card ${c.cls}"><div style="font-family:var(--disp);font-size:44px;font-weight:700">${c.ttl}</div>
+    <div class="note" style="font-size:27px">${c.txt}</div></div>`).join("")}</div>
+   ${s.foot?`<div style="margin-top:44px;border-top:1px solid var(--line);padding-top:32px;font-size:31px;line-height:1.6;color:var(--dim)">${s.foot}</div>`:""}${src(s)}`
+};
+
+
+
+
+
+
+
+document.body.insertAdjacentHTML("beforeend",
+  `<div id="stageWrap"><div id="stage">` +
+  DATA.slides.map(s=>`<section class="slide" id="${s.id}"><div class="fit">${R[s.type](s)}</div></section>`).join("") +
+  `</div></div>
+   <div id="grid"><div id="gtitle">SLIDES &mdash; click to jump / Esc to close</div><div class="ggrid"></div></div>
+   <div id="hud"><span id="pos"></span><b>&larr; &rarr; / Space</b><b>F: grid</b></div>`);
+
+const stage  = document.getElementById("stage");
+const wrap   = document.getElementById("stageWrap");
+const grid   = document.getElementById("grid");
+const ggrid  = grid.querySelector(".ggrid");
+const pos    = document.getElementById("pos");
+const slides = [...document.querySelectorAll("#stage .slide")];
+let idx = 0;
+
+/* 画面サイズに合わせてスライド全体をスケール（レターボックス／見切れ防止） */
+function resize(){
+  const s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+  stage.style.transform = "scale(" + s + ")";
+  [...ggrid.querySelectorAll(".gbox")].forEach(b=>{
+    b.style.transform = "scale(" + (b.parentElement.clientWidth / 1920) + ")";
+  });
+}
+window.addEventListener("resize", resize);
+
+/* 1枚に文字が多すぎる場合、そのスライドだけ自動縮小 */
+function autoshrink(){
+  const avail = 1080 - 78 - 96;
+  slides.forEach(sl=>{
+    const was = sl.classList.contains("on");
+    sl.classList.add("on");
+    const fit = sl.querySelector(".fit");
+    fit.style.transform = "";
+    const h = fit.scrollHeight;
+    if (h > avail + 2) fit.style.transform = "scale(" + (avail / h).toFixed(4) + ")";
+    if (!was) sl.classList.remove("on");
+  });
+}
+
+function show(n){
+  idx = Math.max(0, Math.min(slides.length - 1, n));
+  slides.forEach((el,k)=> el.classList.toggle("on", k === idx));
+  pos.textContent = (idx + 1) + " / " + slides.length + "  " + DATA.slides[idx].id;
+  [...ggrid.children].forEach((c,k)=> c.classList.toggle("cur", k === idx));
+  location.hash = DATA.slides[idx].id;
+}
+
+function buildGrid(){
+  ggrid.innerHTML = "";
+  slides.forEach((sl,k)=>{
+    const cell = document.createElement("div");
+    cell.className = "gcell";
+    const box = document.createElement("div");
+    box.className = "gbox";
+    const clone = sl.cloneNode(true);
+    clone.removeAttribute("id");
+    clone.classList.add("on");
+    box.appendChild(clone);
+    cell.appendChild(box);
+    const lab = document.createElement("span");
+    lab.className = "glab";
+    lab.textContent = DATA.slides[k].id + "  " + DATA.slides[k].t;
+    cell.appendChild(lab);
+    cell.addEventListener("click", ()=>{ show(k); closeGrid(); });
+    ggrid.appendChild(cell);
+  });
+  resize();
+}
+const openGrid  = ()=>{ grid.classList.add("on"); buildGrid(); };
+const closeGrid = ()=> grid.classList.remove("on");
+
+document.addEventListener("keydown", e=>{
+  const open = grid.classList.contains("on");
+  const k = e.key;
+  if (open){
+    if (k === "Escape" || k === "f" || k === "F"){ closeGrid(); e.preventDefault(); }
+    return;
+  }
+  if (["ArrowRight","ArrowDown","PageDown"," ","Enter"].includes(k)){ show(idx+1); e.preventDefault(); }
+  else if (["ArrowLeft","ArrowUp","PageUp","Backspace"].includes(k)){ show(idx-1); e.preventDefault(); }
+  else if (k === "Home"){ show(0); e.preventDefault(); }
+  else if (k === "End"){ show(slides.length-1); e.preventDefault(); }
+  else if (k === "f" || k === "F"){ openGrid(); e.preventDefault(); }
+});
+
+/* クリック：右半分で次、左半分で前 */
+wrap.addEventListener("click", e=> show(e.clientX > window.innerWidth/2 ? idx+1 : idx-1));
+
+autoshrink();
+resize();
+const start = DATA.slides.findIndex(s => "#" + s.id === location.hash);
+show(start >= 0 ? start : 0);
+
+</script>
+</body>
+</html>
