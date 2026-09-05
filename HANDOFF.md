@@ -132,7 +132,15 @@ python3 validate_json.py 2026-MM-DD-tesla.json
 ```
 では、本日の内容は以上です!今回の動画が参考になったと思われたら高評価をよろしくお願いします。僕のYouTubeは毎日発信しています。僕のYouTubeをご覧になって貰えばテスラの情報はほとんど網羅すると思いますので、チャンネル登録がまだな方はチャンネル登録をお願いします。では、今日もご視聴していただきありがとうございます!テスラのある生活を楽しんでいきましょう。
 ```
-（183字。英語版は「毎日発信」が事実と異なるため "I post new videos here regularly" に置換）
+（183字）
+
+英語版のS25も**一字一句そのまま。変更禁止。**
+
+```
+That's it for today. If this was useful, a like really helps. I post new videos here regularly, covering Tesla and SpaceX from an owner's point of view, so if you're not subscribed yet, please consider subscribing. Thanks for watching, and enjoy the Tesla life.
+```
+
+（「毎日発信」は英語チャンネルの実態と異なるため "regularly"。デッキのS25フッターは "Enjoy the Tesla life."）
 
 ### S26（追伸）
 - `only:"ja"`。英語版には入れない
