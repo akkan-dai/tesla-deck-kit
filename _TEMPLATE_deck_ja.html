@@ -204,15 +204,15 @@ function ladderSVG(steps){
 /* 番号つきカードを2段グリッドで。steps:[{t,d,cls}] */
 function gridSVG(steps){
   const n = steps.length, per = Math.ceil(n/2), W = 1600, gap = 34;
-  const bw = (W - 80 - gap*(per-1))/per, bh = 240;
+  const bw = (W - 80 - gap*(per-1))/per, bh = 208;
   let o = "";
   steps.forEach((st,i)=>{
     const r = Math.floor(i/per), cI = i%per;
     const x = 40 + cI*(bw+gap), y = 20 + r*(bh+gap), c = col(st.cls||"off");
     o += `<rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="6" fill="${C.panel}" stroke="${c}" stroke-width="2"/>`;
-    o += tx(x+bw/2, y+58, String(i+1).padStart(2,"0"), {s:25, f:c, m:1});
-    o += tx(x+bw/2, y+128, st.t, {s:38});
-    if(st.d) o += tx(x+bw/2, y+180, st.d, {s:27, f:C.dim});
+    o += tx(x+bw/2, y+52, String(i+1).padStart(2,"0"), {s:25, f:c, m:1});
+    o += tx(x+bw/2, y+114, st.t, {s:38});
+    if(st.d) o += tx(x+bw/2, y+162, st.d, {s:27, f:C.dim});
   });
   return svgBox(W, 20 + 2*bh + gap + 20, o, 20);
 }
@@ -220,7 +220,7 @@ function gridSVG(steps){
 /* 折れ線。points:[{x,t,v,val,cls}] opt:{hline,hlabel,foot} */
 function lineSVG(points, opt){
   opt = opt || {};
-  const W = 1600, H = 560, L = 100, R = 150, T = 46, B = 96;
+  const W = 1600, H = 500, L = 100, R = 150, T = 40, B = 88;
   const vs = points.map(p=>p.v), mx = Math.max.apply(null,vs), mn = Math.min.apply(null,vs);
   const pad = (mx-mn)*0.18 || Math.abs(mx*0.1) || 1;
   const hi = mx+pad, lo = mn-pad;
@@ -301,7 +301,7 @@ const R = {
 
  units: s => `${head(s)}<div class="grid g2" style="margin-top:44px">${s.units.map(u=>
    `<div class="card off"><div style="font-family:var(--mono);font-size:56px;font-weight:700;color:var(--amber)">${u.u}</div>
-    <div class="k">${u.n}</div><div class="note">${u.d}</div></div>`).join("")}</div>${foot(s)}${src(s)}`,
+    <div class="k">${u.n}</div><div class="note">${u.d}</div></div>`).join("")}</div>${footb(s)}${src(s)}`,
 
  /* 比率バー。bar:{a:{flex,big,sub},b:{flex,label}} ends:[左,右] cards:[{cls,k,big,note,strike}] */
  ratio: s => `${head(s)}<div class="center" style="width:100%">
@@ -350,23 +350,23 @@ const R = {
    </div></div>${foot(s)}${src(s)}`,
 
  /* 横フロー。steps:[{t,d,d2,n,cls}] labels:[矢印上の語] tall:true */
- flow:  s => `${head(s)}<div class="center" style="width:100%">${flowSVG(s.steps, {labels:s.labels, tall:s.tall})}${footb(s)}</div>${src(s)}`,
- chain: s => `${head(s)}<div class="center" style="width:100%">${flowSVG(s.steps, {labels:s.labels, tall:true})}${footb(s)}</div>${src(s)}`,
+ flow:  s => `${head(s)}<div class="center" style="width:100%">${flowSVG(s.steps, {labels:s.labels, tall:s.tall})}</div>${footb(s)}${src(s)}`,
+ chain: s => `${head(s)}<div class="center" style="width:100%">${flowSVG(s.steps, {labels:s.labels, tall:true})}</div>${footb(s)}${src(s)}`,
 
  /* 縦の梯子。steps:[{t,v,cls}] */
- ladder: s => `${head(s)}<div class="center" style="width:100%">${ladderSVG(s.steps)}${footb(s)}</div>${src(s)}`,
+ ladder: s => `${head(s)}<div class="center" style="width:100%">${ladderSVG(s.steps)}</div>${footb(s)}${src(s)}`,
 
  /* 番号つき2段グリッド。steps:[{t,d,cls}] */
- flow2: s => `${head(s)}<div class="center" style="width:100%">${gridSVG(s.steps)}${footb(s)}</div>${src(s)}`,
+ flow2: s => `${head(s)}<div class="center" style="width:100%">${gridSVG(s.steps)}</div>${footb(s)}${src(s)}`,
 
  /* 折れ線。points:[{x,t,v,val,cls}] hline / hlabel */
- pricechart: s => `${head(s)}<div class="center" style="width:100%">${lineSVG(s.points, {hline:s.hline, hlabel:s.hlabel})}${footb(s)}</div>${src(s)}`,
+ pricechart: s => `${head(s)}<div class="center" style="width:100%">${lineSVG(s.points, {hline:s.hline, hlabel:s.hlabel})}</div>${footb(s)}${src(s)}`,
 
  /* 縦棒比較。bars:[{v,val,t,cls}] */
- subtract: s => `${head(s)}<div class="center" style="width:100%">${barsSVG(s.bars)}${footb(s)}</div>${src(s)}`,
+ subtract: s => `${head(s)}<div class="center" style="width:100%">${barsSVG(s.bars)}</div>${footb(s)}${src(s)}`,
 
  /* 年表。points:[{d,t,cls}] gaps:[…] */
- timeline: s => `${head(s)}<div class="center" style="width:100%">${timeSVG(s.points, s.gaps)}${s.foot?`<div style="margin-top:16px;text-align:center;font-size:30px;color:var(--dim)">${s.foot}</div>`:""}</div>${src(s)}`,
+ timeline: s => `${head(s)}<div class="center" style="width:100%">${timeSVG(s.points, s.gaps)}</div>${footb(s)}${src(s)}`,
 
  three: s => `${head(s)}<div class="grid g3" style="margin-top:44px">${s.three.map(t=>
    `<div class="card ${t.cls}" style="align-items:stretch">
