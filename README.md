@@ -26,6 +26,7 @@ curl -sL https://raw.githubusercontent.com/akkan-dai/tesla-deck-kit/main/setup.s
 | `verify.py` | undefined・はみ出し・英語デッキ内の日本語を検出 |
 | `overlap.py` | 出典×凡例、本文×出典の重なりを検出（verify.pyが拾えない崩れ用） |
 | `png.py` | 全スライドを1920×1080のPNGへ書き出し |
+| `validate_json.py` | ナレーションJSONの検査（cover の有無、vo.ja / vo.en の埋まり） |
 | `HANDOFF.md` | 引き継ぎプロンプト。新スレッドの1通目に貼る |
 | `data_test.js` | 全30型の見本データ。型の書き方はここを見る |
 

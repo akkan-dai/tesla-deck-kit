@@ -4,7 +4,7 @@ BASE="https://raw.githubusercontent.com/akkan-dai/tesla-deck-kit/main"
 DIR="${1:-/home/claude/w}"
 mkdir -p "$DIR"
 cd "$DIR"
-for f in _TEMPLATE_deck_ja.html _TEMPLATE_deck_en.html build.py count.py inject.py verify.py png.py overlap.py data_test.js HANDOFF.md; do
+for f in _TEMPLATE_deck_ja.html _TEMPLATE_deck_en.html build.py count.py inject.py verify.py png.py overlap.py validate_json.py data_test.js HANDOFF.md; do
   curl -fsSL "$BASE/$f" -o "$f"
   printf '  ok %s\n' "$f"
 done

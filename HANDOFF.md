@@ -39,13 +39,49 @@ curl -sL https://raw.githubusercontent.com/akkan-dai/tesla-deck-kit/main/setup.s
 | `script-en-MMDD.md` | 英語台本（26枚 S0〜S25。追伸S26は含まない） |
 | `deckMMDD.html` / `deck-en-MMDD.html` | スライドデッキ |
 | `slides/`（27枚）/ `slides-en/`（26枚） | PNG 1920×1080 |
-| `2026-MM-DD-tesla.json` | ナレーションJSON（vo.ja / vo.en、S26は `only:"ja"`） |
+| `2026-MM-DD-tesla.json` | ナレーションJSON（下の必須条件を参照） |
 | `video-brief-MMDD.md` | 制作資料 |
 | `appendix-MMDD.md` | 付録 |
 | `data_jaMMDD.js` / `data_enMMDD.js` | デッキのDATA |
 | `tesla-MMDD.zip` | 上記すべてを固めたもの。**これを present_files の先頭に置く** |
 
 日本語版と英語版は**常にセットで、同じターンに納品します。**
+
+### ナレーションJSONの形式（2026-09-01-tesla.json が基準）
+
+音声はこのJSONから自動生成されます。**構造が違うと英語版が作れません。**
+
+```json
+{
+ "meta": {
+  "project": {"ja": "Kenのテスラ戦略ラボ", "en": "Ken's Tesla Strategy Lab"},
+  "date": "2026-09-06",
+  "title": {"ja": "…", "en": "…"},
+  "cover": {"ja": "S0", "en": "S0"},
+  "runtime": {"ja": "10:54", "en": "10:06"}
+ },
+ "slides": [
+  {"id": "S0", "vo": {"ja": "…", "en": "…"}},
+  {"id": "S26", "vo": {"ja": "…", "en": ""}, "only": "ja"}
+ ]
+}
+```
+
+守る点は5つです。
+
+- 最上位は `meta` と `slides` の2つだけ
+- `meta.cover` は**表紙にするスライドのIDを書く**（通常は `{"ja":"S0","en":"S0"}`）。ナレーション本文を入れる場所ではありません
+- スライドのキーは `id` `vo` `only` の3つだけ。**タイムコードは入れません**
+- **`vo` の本文に改行を入れない。**台本は「1文＝1行」ですが、JSONでは1行に連結します
+- 英語版に出さないスライド（追伸S26など）だけ `only:"ja"` を付け、`vo.en` は空文字にする
+
+書き終えたら **`validate_json.py` で検査してください。**
+
+```
+python3 validate_json.py 2026-MM-DD-tesla.json
+```
+
+**同じJSONを2回提示しない。**日本語版だけの段階で一度出し、あとから英語版を足して出し直すと、古いほう（`vo.en` が空のファイル）が使われる事故が起きます。納品は最後の1回だけにしてください。
 
 ---
 
