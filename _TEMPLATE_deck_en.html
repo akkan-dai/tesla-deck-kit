@@ -244,13 +244,13 @@ function lineSVG(points, opt){
 
 /* 縦棒の比較。bars:[{v,val,t,cls}] */
 function barsSVG(bars){
-  const W = 1600, H = 540, base = 430;
+  const W = 1600, H = 470, base = 372;
   const mx = Math.max.apply(null, bars.map(b=>b.v));
   const gap = 80, bw = Math.min(430, (W-120-gap*(bars.length-1))/bars.length);
   const x0 = (W - (bw*bars.length + gap*(bars.length-1)))/2;
   let o = "";
   bars.forEach((b,i)=>{
-    const h = Math.max(10, b.v/mx*350), x = x0 + i*(bw+gap), c = col(b.cls||"off");
+    const h = Math.max(10, b.v/mx*300), x = x0 + i*(bw+gap), c = col(b.cls||"off");
     o += `<rect x="${x}" y="${base-h}" width="${bw}" height="${h}" rx="4" fill="${c}" opacity="0.9"/>`;
     o += tx(x+bw/2, base-h-20, b.val, {s:42, m:1, w:1});
     o += tx(x+bw/2, base+44, b.t, {s:27, f:C.dim});
