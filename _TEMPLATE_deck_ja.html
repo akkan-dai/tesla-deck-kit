@@ -376,7 +376,7 @@ const R = {
    </div>`).join("")}</div>${footb(s)}${src(s)}`,
 
  /* 行リスト。6行以上は自動で詰め、凡例に重ならないよう下を空ける */
- rows: s => { const n = s.rows.length, tight = n >= 6, xt = n >= 7;
+ rows: s => { const n = s.rows.length, tight = n >= 6 || (n >= 5 && s.foot), xt = n >= 7;
    const pad = xt ? "10px 32px" : tight ? "15px 32px" : "24px 32px";
    const gap = xt ? "10px" : tight ? "13px" : "20px";
    const fs  = xt ? "28px" : tight ? "30px" : "33px";
