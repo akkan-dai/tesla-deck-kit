@@ -55,7 +55,7 @@ html.capture #hud{display:none}
 h1{font-family:var(--disp);font-size:82px;line-height:1.16;font-weight:700;letter-spacing:-.005em;max-width:1620px}
 h1 em{font-style:normal;color:var(--amber)}
 h1 b{font-weight:700;color:var(--teal)}
-.sub{margin-top:22px;font-size:34px;line-height:1.55;color:var(--dim);max-width:1500px;font-weight:400}
+.sub{margin-top:22px;font-size:calc(var(--k,1)*51px);line-height:1.55;color:var(--dim);max-width:1500px;font-weight:400}
 
 /* --- 確度タグ（このデッキの中核装置） --- */
 .tag{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:19px;
@@ -70,10 +70,10 @@ h1 b{font-weight:700;color:var(--teal)}
   display:flex;flex-direction:column;gap:12px;min-height:0}
 .card.off{border-left-color:var(--teal)} .card.news{border-left-color:var(--amber)}
 .card.unk{border-left-color:var(--slate);background:transparent;border:1px dashed var(--line);border-left:6px solid var(--slate)}
-.k{font-size:28px;color:var(--dim);letter-spacing:.02em}
+.k{font-size:calc(var(--k,1)*42px);color:var(--dim);letter-spacing:.02em}
 .v{font-family:var(--mono);font-size:66px;font-weight:700;line-height:1.05;letter-spacing:-.02em}
-.v small{font-size:32px;color:var(--dim);font-weight:400;letter-spacing:0}
-.note{font-size:25px;line-height:1.5;color:var(--dim)}
+.v small{font-size:calc(var(--k,1)*48px);color:var(--dim);font-weight:400;letter-spacing:0}
+.note{font-size:calc(var(--k,1)*38px);line-height:1.5;color:var(--dim)}
 
 /* --- 出典 --- */
 .src{position:absolute;left:96px;bottom:38px;font-family:var(--mono);font-size:19px;color:#5C6B85;
@@ -86,9 +86,9 @@ h1 b{font-weight:700;color:var(--teal)}
 .row{display:flex;align-items:center;gap:28px;background:var(--bg2);border-radius:3px;padding:24px 32px;
   border-left:6px solid var(--slate)}
 .row.off{border-left-color:var(--teal)} .row.news{border-left-color:var(--amber)}
-.row .rn{font-family:var(--mono);font-size:30px;color:var(--slate);width:52px;flex:none}
-.row .rt{font-size:33px;line-height:1.4;flex:1}
-.row .rv{font-family:var(--mono);font-size:38px;font-weight:700;white-space:nowrap}
+.row .rn{font-family:var(--mono);font-size:calc(var(--k,1)*45px);color:var(--slate);width:52px;flex:none}
+.row .rt{font-size:calc(var(--k,1)*50px);line-height:1.4;flex:1}
+.row .rv{font-family:var(--mono);font-size:calc(var(--k,1)*48px);font-weight:700;white-space:nowrap}
 .center{margin-top:auto;margin-bottom:auto}
 
 /* --- 日本語の行分割：文節単位で折り返し、語の途中で切らない --- */
@@ -141,8 +141,8 @@ const DATA = {
 const esc = s => s;
 const legendHTML = () => `<div class="legend">${DATA.legend.map(l=>`<span class="tag ${l.cls}">${l.label}</span>`).join("")}</div>`;
 const head = s => `<div class="eyebrow"><span class="snum">${s.id}</span><span class="ebtext">${s.eyebrow}</span><span class="snum">${s.t}</span></div><h1>${s.h}</h1>${s.sub?`<p class="sub">${s.sub}</p>`:""}`;
-const foot = s => s.foot?`<p class="sub" style="margin-top:34px;font-size:29px">${s.foot||""}</p>`:"";
-const footb = s => s.foot?`<p class="sub" style="margin-top:22px;margin-bottom:104px;font-size:29px">${s.foot||""}</p>`:"";
+const foot = s => s.foot?`<p class="sub" style="margin-top:34px;font-size:calc(var(--k,1)*44px)">${s.foot||""}</p>`:"";
+const footb = s => s.foot?`<p class="sub" style="margin-top:22px;margin-bottom:104px;font-size:calc(var(--k,1)*44px)">${s.foot||""}</p>`:"";
 const src  = s => `<div class="src">出典：${s.src}</div>`;
 
 
@@ -292,12 +292,12 @@ const R = {
 
  specs: s => `${head(s)}<div class="grid g4" style="margin-top:44px;margin-bottom:0">${s.cards.map(c=>
    `<div class="card ${c.cls}">${c.tag?`<span class="tag ${c.tcls||"t-unk"}" style="align-self:flex-start">${c.tag}</span>`:""}
-    <div class="k">${c.k}</div><div class="v">${c.v}</div>${c.u?`<div class="note" style="font-size:24px">${c.u}</div>`:""}</div>`).join("")}</div>${foot(s)}${src(s)}${legendHTML()}`,
+    <div class="k">${c.k}</div><div class="v">${c.v}</div>${c.u?`<div class="note" style="font-size:calc(var(--k,1)*36px)">${c.u}</div>`:""}</div>`).join("")}</div>${foot(s)}${src(s)}${legendHTML()}`,
 
  specs2: s => `${head(s)}<div class="grid g4" style="margin-top:40px;margin-bottom:0">${s.cards.map(c=>
    `<div class="card ${c.cls}"><span class="tag ${c.tcls||"t-unk"}" style="align-self:flex-start">${c.tag}</span>
-    <div class="k">${c.k}</div><div class="v">${c.v}</div><div class="note" style="font-size:24px">${c.u||""}</div></div>`).join("")}</div>
-   ${s.foot?`<div style="margin-top:40px;border-top:1px solid var(--line);padding-top:28px;font-size:28px;line-height:1.6;color:var(--dim)">${s.foot}</div>`:""}${src(s)}${legendHTML()}`,
+    <div class="k">${c.k}</div><div class="v">${c.v}</div><div class="note" style="font-size:calc(var(--k,1)*36px)">${c.u||""}</div></div>`).join("")}</div>
+   ${s.foot?`<div style="margin-top:40px;border-top:1px solid var(--line);padding-top:28px;font-size:calc(var(--k,1)*42px);line-height:1.6;color:var(--dim)">${s.foot}</div>`:""}${src(s)}${legendHTML()}`,
 
  units: s => `${head(s)}<div class="grid g2" style="margin-top:44px">${s.units.map(u=>
    `<div class="card off"><div style="font-family:var(--mono);font-size:56px;font-weight:700;color:var(--amber)">${u.u}</div>
@@ -308,14 +308,14 @@ const R = {
    <div style="display:flex;height:180px;border-radius:4px;overflow:hidden;margin-top:20px">
      <div style="flex:${s.bar.a.flex};background:linear-gradient(90deg,#35A8A0,#2A8A84);display:flex;align-items:center;padding-left:44px">
        <div><div style="font-family:var(--mono);font-size:64px;font-weight:700;color:#07110F">${s.bar.a.big}</div>
-       <div style="font-size:28px;color:#07110F;opacity:.8">${s.bar.a.sub||""}</div></div></div>
+       <div style="font-size:calc(var(--k,1)*42px);color:#07110F;opacity:.8">${s.bar.a.sub||""}</div></div></div>
      <div style="flex:${s.bar.b.flex};background:#243250;display:flex;align-items:center;justify-content:center">
-       <div style="font-family:var(--mono);font-size:30px;color:var(--dim)">${s.bar.b.label||""}</div></div>
+       <div style="font-family:var(--mono);font-size:calc(var(--k,1)*45px);color:var(--dim)">${s.bar.b.label||""}</div></div>
    </div>
-   ${s.ends?`<div style="display:flex;justify-content:space-between;margin-top:20px;font-family:var(--mono);font-size:28px;color:var(--dim)"><span>${s.ends[0]}</span><span>${s.ends[1]}</span></div>`:""}
+   ${s.ends?`<div style="display:flex;justify-content:space-between;margin-top:20px;font-family:var(--mono);font-size:calc(var(--k,1)*42px);color:var(--dim)"><span>${s.ends[0]}</span><span>${s.ends[1]}</span></div>`:""}
    ${s.cards?`<div style="margin-top:52px;display:flex;gap:26px">${s.cards.map(c=>
      `<div class="card ${c.cls}" style="flex:1"><div class="k">${c.k}</div>
-       <div style="font-family:var(--mono);font-size:44px;color:${c.strike?"var(--alert)":"var(--teal)"}${c.strike?";text-decoration:line-through":""}">${c.big}</div>
+       <div style="font-family:var(--mono);font-size:calc(var(--k,1)*55px);color:${c.strike?"var(--alert)":"var(--teal)"}${c.strike?";text-decoration:line-through":""}">${c.big}</div>
        <div class="note">${c.note||""}</div></div>`).join("")}</div>`:""}
    </div>${src(s)}`,
 
@@ -324,7 +324,7 @@ const R = {
    `<div class="card ${c.cls}" style="flex:1;justify-content:center">${c.tag?`<span class="tag ${c.tcls||"t-unk"}" style="align-self:flex-start">${c.tag}</span>`:""}
      ${c.k?`<div class="k">${c.k}</div>`:""}
      <div class="${c.mid?"mid":"big"}" style="color:${c.color||(c.strike?"var(--alert)":"var(--teal)")}${c.strike?";text-decoration:line-through":""}">${c.big}</div>
-     <div class="note" style="font-size:28px">${c.note||""}</div></div>`).join("")}</div>${src(s)}${legendHTML()}`,
+     <div class="note" style="font-size:calc(var(--k,1)*42px)">${c.note||""}</div></div>`).join("")}</div>${src(s)}${legendHTML()}`,
 
  /* カード＋ドット比率図。cards:[{cls,tag,tcls,k,mid,strike,note}] dots:{n,on,per,label} */
  city: s => `${head(s)}<div class="center" style="width:100%">
@@ -333,14 +333,14 @@ const R = {
        <div class="k">${c.k}</div>
        ${c.mid?`<div class="${c.strike?"":"mid"}" style="${c.strike?"font-family:var(--mono);font-size:52px;color:var(--alert);text-decoration:line-through;line-height:1.2":""}">${c.mid}</div>`:""}
        <div class="note">${c.note||""}</div></div>`).join("")}</div>
-   ${s.dots?`${dotsSVG(s.dots)}${s.dots.label?`<div style="margin-top:10px;font-size:28px;color:var(--dim)">${s.dots.label}</div>`:""}`:""}
+   ${s.dots?`${dotsSVG(s.dots)}${s.dots.label?`<div style="margin-top:10px;font-size:calc(var(--k,1)*42px);color:var(--dim)">${s.dots.label}</div>`:""}`:""}
    </div>${src(s)}${legendHTML()}`,
 
  /* 2案の対比（大見出し＋箇条書き）。left/right:{cls,tag,tcls,ttl,items,size} */
  ownbuy: s => `${head(s)}<div class="center" style="display:flex;gap:44px;width:100%">${[s.left,s.right].map(c=>
    `<div class="card ${c.cls}" style="flex:1;min-height:360px">${c.tag?`<span class="tag ${c.tcls||"t-unk"}" style="align-self:flex-start">${c.tag}</span>`:""}
-     <div style="font-family:var(--disp);font-size:${c.size||58}px;font-weight:700;color:${c.cls==="off"?"var(--teal)":"var(--slate)"}">${c.ttl}</div>
-     <div class="note" style="font-size:29px;margin-top:12px">${c.items.map(i=>BUL+i).join("<br>")}</div></div>`).join("")}
+     <div style="font-family:var(--disp);font-size:calc(var(--k,1)*${c.size||62}px);font-weight:700;color:${c.cls==="off"?"var(--teal)":"var(--slate)"}">${c.ttl}</div>
+     <div class="note" style="font-size:calc(var(--k,1)*44px);margin-top:12px">${c.items.map(i=>BUL+i).join("<br>")}</div></div>`).join("")}
    </div>${src(s)}${legendHTML()}`,
 
  table: s => `${head(s)}<div style="margin-top:40px;width:100%">
@@ -370,16 +370,16 @@ const R = {
 
  three: s => `${head(s)}<div class="grid g3" style="margin-top:44px">${s.three.map(t=>
    `<div class="card ${t.cls}" style="align-items:stretch">
-     <div style="font-family:var(--disp);font-size:48px;font-weight:700">${t.ttl}</div>
-     <div style="font-family:var(--mono);font-size:21px;color:var(--dim);letter-spacing:.04em">${t.tag||""}</div>
-     <ul style="margin-top:14px;list-style:none">${t.items.map(i=>`<li style="font-size:27px;line-height:1.45;margin-bottom:16px;padding-left:26px;position:relative"><span style="position:absolute;left:0;color:var(--dim)">—</span>${i}</li>`).join("")}</ul>
+     <div style="font-family:var(--disp);font-size:calc(var(--k,1)*60px);font-weight:700">${t.ttl}</div>
+     <div style="font-family:var(--mono);font-size:calc(var(--k,1)*32px);color:var(--dim);letter-spacing:.04em">${t.tag||""}</div>
+     <ul style="margin-top:14px;list-style:none">${t.items.map(i=>`<li style="font-size:calc(var(--k,1)*40px);line-height:1.45;margin-bottom:16px;padding-left:26px;position:relative"><span style="position:absolute;left:0;color:var(--dim)">—</span>${i}</li>`).join("")}</ul>
    </div>`).join("")}</div>${footb(s)}${src(s)}`,
 
  /* 行リスト。6行以上は自動で詰め、凡例に重ならないよう下を空ける */
  rows: s => { const n = s.rows.length, tight = n >= 6 || (n >= 5 && s.foot), xt = n >= 7;
    const pad = xt ? "10px 32px" : tight ? "15px 32px" : "24px 32px";
    const gap = xt ? "10px" : tight ? "13px" : "20px";
-   const fs  = xt ? "28px" : tight ? "30px" : "33px";
+   const fs  = xt ? "calc(var(--k,1)*38px)" : tight ? "calc(var(--k,1)*42px)" : "calc(var(--k,1)*48px)";
    const mgn = n >= 5 ? `margin-top:${xt?20:30}px;margin-bottom:${s.foot?"12px":"116px"}` : "margin-top:38px";
    return `${head(s)}<div class="rowlist" style="${mgn};gap:${gap}">${s.rows.map(r=>
      `<div class="row ${r.cls}" style="padding:${pad}"><span class="rn">${r.n}</span><span class="rt" style="font-size:${fs}">${r.t}</span><span class="rv" style="color:${r.cls=="off"?"var(--teal)":r.cls=="news"?"var(--amber)":"var(--slate)"}">${r.v}</span></div>`).join("")}</div>${footb(s)}${src(s)}${legendHTML()}`; },
@@ -387,64 +387,64 @@ const R = {
  ps: s => `${head(s)}<div class="center" style="width:100%">
    <div style="display:flex;gap:26px;margin-top:44px">${s.points.map((p,i)=>
      `<div class="card news" style="flex:1;justify-content:center;min-height:210px">
-       <div style="font-family:var(--mono);font-size:24px;color:var(--amber)">0${i+1}</div>
-       <div style="font-size:30px;line-height:1.45">${p}</div></div>`).join("")}</div>
-   <div style="margin-top:46px;border-top:1px solid var(--line);padding-top:30px;font-size:29px;color:var(--dim)">
+       <div style="font-family:var(--mono);font-size:calc(var(--k,1)*36px);color:var(--amber)">0${i+1}</div>
+       <div style="font-size:calc(var(--k,1)*45px);line-height:1.45">${p}</div></div>`).join("")}</div>
+   <div style="margin-top:46px;border-top:1px solid var(--line);padding-top:30px;font-size:calc(var(--k,1)*44px);color:var(--dim)">
      ${s.brand||""}</div></div>${src(s)}`,
 
  split: s => `${head(s)}<div class="center" style="display:flex;gap:44px;width:100%">
-   <div class="card ${s.left.cls}" style="flex:1.15"><div style="font-family:var(--disp);font-size:46px;font-weight:700">${s.left.ttl}</div>
-     <ul style="margin-top:16px;list-style:none">${s.left.items.map(i=>`<li style="font-size:31px;line-height:1.5;margin-bottom:18px;padding-left:30px;position:relative"><span style="position:absolute;left:0;color:var(--teal)">\u2713</span>${i}</li>`).join("")}</ul></div>
-   <div class="card ${s.right.cls||""}" style="flex:1;justify-content:center"><div style="font-size:30px;color:var(--dim)">${s.right.ttl}</div>
+   <div class="card ${s.left.cls}" style="flex:1.15"><div style="font-family:var(--disp);font-size:calc(var(--k,1)*58px);font-weight:700">${s.left.ttl}</div>
+     <ul style="margin-top:16px;list-style:none">${s.left.items.map(i=>`<li style="font-size:calc(var(--k,1)*46px);line-height:1.5;margin-bottom:18px;padding-left:30px;position:relative"><span style="position:absolute;left:0;color:var(--teal)">\u2713</span>${i}</li>`).join("")}</ul></div>
+   <div class="card ${s.right.cls||""}" style="flex:1;justify-content:center"><div style="font-size:calc(var(--k,1)*45px);color:var(--dim)">${s.right.ttl}</div>
      <div style="font-family:var(--mono);font-size:132px;font-weight:700;color:var(--amber);line-height:1;letter-spacing:-.03em">${s.right.big}</div>
-     <div class="note" style="font-size:28px;margin-top:10px">${s.right.sub||""}</div></div>
+     <div class="note" style="font-size:calc(var(--k,1)*42px);margin-top:10px">${s.right.sub||""}</div></div>
    </div>${footb(s)}${src(s)}${legendHTML()}`,
 
  twocol: s => `${head(s)}<div class="grid g2" style="margin-top:46px;margin-bottom:0">${[s.left,s.right].map(c=>
-   `<div class="card ${c.cls}"><div style="font-family:var(--disp);font-size:46px;font-weight:700">${c.ttl}</div>
-    <div class="note" style="font-size:30px;margin-top:10px">${c.body}</div></div>`).join("")}</div>
-   ${s.foot?`<div style="margin-top:44px;border-top:1px solid var(--line);padding-top:30px;font-size:34px;color:var(--amber)">${s.foot}</div>`:""}${src(s)}`,
+   `<div class="card ${c.cls}"><div style="font-family:var(--disp);font-size:calc(var(--k,1)*58px);font-weight:700">${c.ttl}</div>
+    <div class="note" style="font-size:calc(var(--k,1)*45px);margin-top:10px">${c.body}</div></div>`).join("")}</div>
+   ${s.foot?`<div style="margin-top:44px;border-top:1px solid var(--line);padding-top:30px;font-size:calc(var(--k,1)*51px);color:var(--amber)">${s.foot}</div>`:""}${src(s)}`,
 
  statement: s => `${head(s)}<div class="center" style="width:100%">
    <div style="display:flex;gap:24px;margin-top:40px">${s.points.map((p,i)=>
      `<div class="card off" style="flex:1;justify-content:center;min-height:230px">
-       <div style="font-family:var(--mono);font-size:24px;color:var(--teal)">0${i+1}</div>
-       <div style="font-size:30px;line-height:1.45">${p}</div></div>`).join("")}</div>
-   ${s.foot?`<div style="margin-top:44px;font-size:31px;color:var(--dim)">${s.foot}</div>`:""}</div>${src(s)}`,
+       <div style="font-family:var(--mono);font-size:calc(var(--k,1)*36px);color:var(--teal)">0${i+1}</div>
+       <div style="font-size:calc(var(--k,1)*45px);line-height:1.45">${p}</div></div>`).join("")}</div>
+   ${s.foot?`<div style="margin-top:44px;font-size:calc(var(--k,1)*46px);color:var(--dim)">${s.foot}</div>`:""}</div>${src(s)}`,
 
  quote: s => `${head(s)}<div class="center" style="width:100%">
    <div class="card off" style="padding:52px 60px;border-left-width:8px">
-     <div style="font-size:44px;line-height:1.6;color:var(--ink)">\u201C${s.quote}\u201D</div></div>
-   <div style="margin-top:36px;font-size:30px;line-height:1.6;color:var(--dim)">${s.note||""}</div></div>${src(s)}`,
+     <div style="font-size:calc(var(--k,1)*55px);line-height:1.6;color:var(--ink)">\u201C${s.quote}\u201D</div></div>
+   <div style="margin-top:36px;font-size:calc(var(--k,1)*45px);line-height:1.6;color:var(--dim)">${s.note||""}</div></div>${src(s)}`,
 
  chart: s => `${head(s)}<div style="display:flex;gap:40px;align-items:flex-start;margin-top:18px;margin-bottom:96px">
    <div style="flex:0 0 62%"><img src="${IMAGES[s.img]||""}" style="width:100%;max-height:600px;object-fit:contain;border-radius:10px;display:block"></div>
    <div style="flex:1;display:flex;flex-direction:column;gap:18px;padding-top:6px">${(s.points||[]).map(p=>
-     `<div class="card ${s.cls||"off"}" style="padding:20px 24px;font-size:29px;line-height:1.5">${p}</div>`).join("")}
-     ${s.foot?`<p class="sub" style="font-size:27px;margin:14px 0 0">${s.foot}</p>`:""}</div>
+     `<div class="card ${s.cls||"off"}" style="padding:20px 24px;font-size:calc(var(--k,1)*44px);line-height:1.5">${p}</div>`).join("")}
+     ${s.foot?`<p class="sub" style="font-size:calc(var(--k,1)*40px);margin:14px 0 0">${s.foot}</p>`:""}</div>
   </div>${src(s)}`,
 
  photo: s => `${head(s)}<div class="center" style="display:flex;gap:40px;align-items:center;width:100%">
    <img src="${IMAGES[s.img]}" style="flex:1.25;width:0;border-radius:4px;border:1px solid var(--line)"/>
    <div style="flex:1;display:flex;flex-direction:column;gap:20px">${s.points.map(p=>
-     `<div class="card ${s.cls||"off"}" style="padding:24px 28px"><div style="font-size:30px;line-height:1.4">${p}</div></div>`).join("")}</div>
+     `<div class="card ${s.cls||"off"}" style="padding:24px 28px"><div style="font-size:calc(var(--k,1)*45px);line-height:1.4">${p}</div></div>`).join("")}</div>
    </div>${footb(s)}${src(s)}`,
 
  concl2: s => `${head(s)}<div class="grid g3" style="margin-top:46px;margin-bottom:0">${s.concl.map(c=>
-   `<div class="card ${c.cls}" style="min-height:250px"><div style="font-family:var(--disp);font-size:48px;font-weight:700">${c.ttl}</div>
-    <div class="note" style="font-size:29px">${c.txt}</div></div>`).join("")}</div>
-   ${s.foot?`<div style="margin-top:44px;border-top:1px solid var(--line);padding-top:30px;font-size:31px;line-height:1.6;color:var(--dim)">${s.foot}</div>`:""}${src(s)}`,
+   `<div class="card ${c.cls}" style="min-height:250px"><div style="font-family:var(--disp);font-size:calc(var(--k,1)*60px);font-weight:700">${c.ttl}</div>
+    <div class="note" style="font-size:calc(var(--k,1)*44px)">${c.txt}</div></div>`).join("")}</div>
+   ${s.foot?`<div style="margin-top:44px;border-top:1px solid var(--line);padding-top:30px;font-size:calc(var(--k,1)*46px);line-height:1.6;color:var(--dim)">${s.foot}</div>`:""}${src(s)}`,
 
  cta: s => `${head(s)}<div class="center" style="width:100%">
    <div style="display:flex;gap:30px;margin-top:50px;justify-content:center">${s.points.map(p=>
      `<div class="card off" style="flex:1;align-items:center;justify-content:center;min-height:240px">
        <div style="font-family:var(--disp);font-size:52px;font-weight:700;color:var(--teal);text-align:center">${p}</div></div>`).join("")}</div>
-   ${s.foot?`<div style="margin-top:50px;text-align:center;font-size:36px;color:var(--ink)">${s.foot}</div>`:""}</div>${src(s)}`,
+   ${s.foot?`<div style="margin-top:50px;text-align:center;font-size:calc(var(--k,1)*54px);color:var(--ink)">${s.foot}</div>`:""}</div>${src(s)}`,
 
  concl: s => `${head(s)}<div class="grid g3" style="margin-top:40px;margin-bottom:0">${s.concl.map(c=>
-   `<div class="card ${c.cls}"><div style="font-family:var(--disp);font-size:44px;font-weight:700">${c.ttl}</div>
-    <div class="note" style="font-size:27px">${c.txt}</div></div>`).join("")}</div>
-   ${s.foot?`<div style="margin-top:44px;border-top:1px solid var(--line);padding-top:32px;font-size:31px;line-height:1.6;color:var(--dim)">${s.foot}</div>`:""}${src(s)}`
+   `<div class="card ${c.cls}"><div style="font-family:var(--disp);font-size:calc(var(--k,1)*55px);font-weight:700">${c.ttl}</div>
+    <div class="note" style="font-size:calc(var(--k,1)*40px)">${c.txt}</div></div>`).join("")}</div>
+   ${s.foot?`<div style="margin-top:44px;border-top:1px solid var(--line);padding-top:32px;font-size:calc(var(--k,1)*46px);line-height:1.6;color:var(--dim)">${s.foot}</div>`:""}${src(s)}`
 };
 
 
@@ -477,6 +477,26 @@ function resize(){
   });
 }
 window.addEventListener("resize", resize);
+
+/* 余白が多いスライドは、本文の文字をさらに大きくする（最大1.25倍） */
+function autogrow(){
+  const avail = 1080 - 78 - 96 - 90;
+  slides.forEach(sl=>{
+    const was = sl.classList.contains("on");
+    sl.classList.add("on");
+    const fit = sl.querySelector(".fit");
+    const measure = ()=>{ fit.style.height="auto"; const h=fit.offsetHeight; fit.style.height=""; return h; };
+    let k = 1.0;
+    sl.style.setProperty("--k", k);
+    while (k < 1.25){
+      const nk = +(k + 0.05).toFixed(2);
+      sl.style.setProperty("--k", nk);
+      if (measure() > avail || sl.scrollWidth > 1920) { sl.style.setProperty("--k", k); break; }
+      k = nk;
+    }
+    if (!was) sl.classList.remove("on");
+  });
+}
 
 /* 1枚に文字が多すぎる場合、そのスライドだけ自動縮小 */
 function autoshrink(){
@@ -541,7 +561,7 @@ document.addEventListener("keydown", e=>{
 /* クリック：右半分で次、左半分で前 */
 wrap.addEventListener("click", e=> show(e.clientX > window.innerWidth/2 ? idx+1 : idx-1));
 
-autoshrink();
+autogrow(); autoshrink(); if (document.fonts) document.fonts.ready.then(()=>{ autogrow(); autoshrink(); });
 resize();
 const start = DATA.slides.findIndex(s => "#" + s.id === location.hash);
 show(start >= 0 ? start : 0);
