@@ -7,7 +7,7 @@ import sys, io, re
 
 path, lang = sys.argv[1], sys.argv[2]
 s = io.open(path, encoding="utf-8").read()
-s = re.sub(r"^## \[(S\d+)\][^\n]*?[　 ]{1,2}", lambda m: "## %s " % m.group(1), s, flags=re.M)
+s = re.sub(r"^## \[(S\d+)\] (?:\d+:\d\d-\d+:\d\d[　 ]+)+", lambda m: "## %s " % m.group(1), s, flags=re.M)
 
 blocks, cur, buf = [], None, []
 for ln in s.split("\n"):
@@ -39,4 +39,7 @@ s = re.sub(r"^## (S\d+)(.*)$",
            s, flags=re.M)
 io.open(path, "w", encoding="utf-8").write(s)
 print("TOTAL " + mmss(t))
-for k, v in tc.items(): print("  %-4s %s" % (k, v))
+try:
+    for k, v in tc.items(): print("  %-4s %s" % (k, v))
+except BrokenPipeError:
+    pass
